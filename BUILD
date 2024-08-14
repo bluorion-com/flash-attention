@@ -27,5 +27,6 @@ py_binary(
         "@pypi//setuptools:pkg",
         "@pypi//torch:pkg",
         "@pypi//wheel:pkg",
+	"@pypi//pip:pkg",
     ],
 )

@@ -1,32 +1,30 @@
 # Copyright (c) 2023, Tri Dao.
 
-import sys
-import warnings
-import os
-import re
 import ast
 import glob
-import shutil
-from pathlib import Path
-from packaging.version import parse, Version
+import os
 import platform
-
-from setuptools import setup, find_packages
+import re
+import shutil
 import subprocess
-
-import urllib.request
+import sys
 import urllib.error
-from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+import urllib.request
+import warnings
+from pathlib import Path
 
 import torch
+from packaging.version import Version, parse
+from setuptools import find_packages, setup
 from torch.utils.cpp_extension import (
+    CUDA_HOME,
+    IS_HIP_EXTENSION,
+    ROCM_HOME,
     BuildExtension,
     CppExtension,
     CUDAExtension,
-    CUDA_HOME,
-    ROCM_HOME,
-    IS_HIP_EXTENSION,
 )
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
 # ninja build does not work unless include_dirs are abs path
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -49,16 +47,18 @@ else:
 
 PACKAGE_NAME = "flash_attn"
 
-BASE_WHEEL_URL = (
-    "https://github.com/Dao-AILab/flash-attention/releases/download/{tag_name}/{wheel_name}"
-)
+BASE_WHEEL_URL = "https://github.com/Dao-AILab/flash-attention/releases/download/{tag_name}/{wheel_name}"
 
 # FORCE_BUILD: Force a fresh build locally, instead of attempting to find prebuilt wheels
 # SKIP_CUDA_BUILD: Intended to allow CI to use a simple `python setup.py sdist` run to copy over raw files, without any cuda compilation
 FORCE_BUILD = os.getenv("FLASH_ATTENTION_FORCE_BUILD", "FALSE") == "TRUE"
-SKIP_CUDA_BUILD = os.getenv("FLASH_ATTENTION_SKIP_CUDA_BUILD", "FALSE") == "TRUE"
+SKIP_CUDA_BUILD = (
+    os.getenv("FLASH_ATTENTION_SKIP_CUDA_BUILD", "FALSE") == "TRUE"
+)
 # For CI, we want the option to build with C++11 ABI since the nvcr images use C++11 ABI
-FORCE_CXX11_ABI = os.getenv("FLASH_ATTENTION_FORCE_CXX11_ABI", "FALSE") == "TRUE"
+FORCE_CXX11_ABI = (
+    os.getenv("FLASH_ATTENTION_FORCE_CXX11_ABI", "FALSE") == "TRUE"
+)
 
 
 def get_platform():
@@ -66,7 +66,7 @@ def get_platform():
     Returns the platform name as used in wheel filenames.
     """
     if sys.platform.startswith("linux"):
-        return f'linux_{platform.uname().machine}'
+        return f"linux_{platform.uname().machine}"
     elif sys.platform == "darwin":
         mac_version = ".".join(platform.mac_ver()[0].split(".")[:2])
         return f"macosx_{mac_version}_x86_64"
@@ -77,7 +77,9 @@ def get_platform():
 
 
 def get_cuda_bare_metal_version(cuda_dir):
-    raw_output = subprocess.check_output([cuda_dir + "/bin/nvcc", "-V"], universal_newlines=True)
+    raw_output = subprocess.check_output(
+        [cuda_dir + "/bin/nvcc", "-V"], universal_newlines=True
+    )
     output = raw_output.split()
     release_idx = output.index("release") + 1
     bare_metal_version = parse(output[release_idx].split(",")[0])
@@ -102,9 +104,7 @@ def check_if_rocm_home_none(global_option: str) -> None:
         return
     # warn instead of error because user could be downloading prebuilt wheels, so hipcc won't be necessary
     # in that case.
-    warnings.warn(
-        f"{global_option} was requested, but hipcc was not found."
-    )
+    warnings.warn(f"{global_option} was requested, but hipcc was not found.")
 
 
 def append_nvcc_threads(nvcc_extra_args):
@@ -133,7 +133,9 @@ ext_modules = []
 # We want this even if SKIP_CUDA_BUILD because when we run python setup.py sdist we want the .hpp
 # files included in the source distribution, in case the user compiles from source.
 if IS_ROCM:
-    subprocess.run(["git", "submodule", "update", "--init", "csrc/composable_kernel"])
+    subprocess.run(
+        ["git", "submodule", "update", "--init", "csrc/composable_kernel"]
+    )
 else:
     subprocess.run(["git", "submodule", "update", "--init", "csrc/cutlass"])
 
@@ -146,7 +148,9 @@ if not SKIP_CUDA_BUILD and not IS_ROCM:
     # See https://github.com/pytorch/pytorch/pull/70650
     generator_flag = []
     torch_dir = torch.__path__[0]
-    if os.path.exists(os.path.join(torch_dir, "include", "ATen", "CUDAGeneratorImpl.h")):
+    if os.path.exists(
+        os.path.join(torch_dir, "include", "ATen", "CUDAGeneratorImpl.h")
+    ):
         generator_flag = ["-DOLD_GENERATOR_PATH"]
 
     check_if_cuda_home_none("flash_attn")
@@ -177,91 +181,94 @@ if not SKIP_CUDA_BUILD and not IS_ROCM:
         CUDAExtension(
             name="flash_attn_2_cuda",
             sources=[
-                "csrc/flash_attn/flash_api.cpp",
-                "csrc/flash_attn/src/flash_fwd_hdim32_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim32_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim64_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim64_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim96_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim96_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim128_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim128_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim160_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim160_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim192_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim192_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim256_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim256_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim32_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim32_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim64_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim64_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim96_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim96_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim128_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim128_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim160_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim160_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim192_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim192_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim256_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_hdim256_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim32_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim32_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim64_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim64_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim96_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim96_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim128_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim128_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim160_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim160_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim192_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim192_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim256_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim256_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim32_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim32_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim64_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim64_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim96_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim96_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim128_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim128_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim160_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim160_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim192_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim192_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim256_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_bwd_hdim256_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim32_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim32_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim64_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim64_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim96_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim96_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim128_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim128_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim160_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim160_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim192_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim192_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim256_fp16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim256_bf16_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim32_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim32_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim64_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim64_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim96_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim96_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim128_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim128_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim160_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim160_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim192_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim192_bf16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim256_fp16_causal_sm80.cu",
-                "csrc/flash_attn/src/flash_fwd_split_hdim256_bf16_causal_sm80.cu",
+                os.path.join(this_dir, f)
+                for f in [
+                    "csrc/flash_attn/flash_api.cpp",
+                    "csrc/flash_attn/src/flash_fwd_hdim32_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim32_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim64_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim64_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim96_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim96_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim128_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim128_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim160_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim160_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim192_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim192_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim256_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim256_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim32_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim32_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim64_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim64_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim96_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim96_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim128_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim128_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim160_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim160_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim192_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim192_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim256_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_hdim256_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim32_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim32_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim64_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim64_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim96_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim96_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim128_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim128_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim160_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim160_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim192_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim192_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim256_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim256_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim32_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim32_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim64_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim64_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim96_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim96_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim128_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim128_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim160_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim160_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim192_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim192_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim256_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_bwd_hdim256_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim32_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim32_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim64_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim64_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim96_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim96_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim128_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim128_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim160_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim160_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim192_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim192_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim256_fp16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim256_bf16_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim32_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim32_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim64_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim64_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim96_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim96_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim128_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim128_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim160_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim160_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim192_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim192_bf16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim256_fp16_causal_sm80.cu",
+                    "csrc/flash_attn/src/flash_fwd_split_hdim256_bf16_causal_sm80.cu",
+                ]
             ],
             extra_compile_args={
                 "cxx": ["-O3", "-std=c++17"] + generator_flag,
@@ -300,12 +307,16 @@ if not SKIP_CUDA_BUILD and not IS_ROCM:
 elif not SKIP_CUDA_BUILD and IS_ROCM:
     ck_dir = "csrc/composable_kernel"
 
-    #use codegen get code dispatch
+    # use codegen get code dispatch
     if not os.path.exists("./build"):
         os.makedirs("build")
 
-    os.system(f"{sys.executable} {ck_dir}/example/ck_tile/01_fmha/generate.py -d fwd --output_dir build --receipt 2")
-    os.system(f"{sys.executable} {ck_dir}/example/ck_tile/01_fmha/generate.py -d bwd --output_dir build --receipt 2")
+    os.system(
+        f"{sys.executable} {ck_dir}/example/ck_tile/01_fmha/generate.py -d fwd --output_dir build --receipt 2"
+    )
+    os.system(
+        f"{sys.executable} {ck_dir}/example/ck_tile/01_fmha/generate.py -d bwd --output_dir build --receipt 2"
+    )
 
     print("\n\ntorch.__version__  = {}\n\n".format(torch.__version__))
     TORCH_MAJOR = int(torch.__version__.split(".")[0])
@@ -315,7 +326,9 @@ elif not SKIP_CUDA_BUILD and IS_ROCM:
     # See https://github.com/pytorch/pytorch/pull/70650
     generator_flag = []
     torch_dir = torch.__path__[0]
-    if os.path.exists(os.path.join(torch_dir, "include", "ATen", "CUDAGeneratorImpl.h")):
+    if os.path.exists(
+        os.path.join(torch_dir, "include", "ATen", "CUDAGeneratorImpl.h")
+    ):
         generator_flag = ["-DOLD_GENERATOR_PATH"]
 
     check_if_rocm_home_none("flash_attn")
@@ -332,50 +345,57 @@ elif not SKIP_CUDA_BUILD and IS_ROCM:
     if FORCE_CXX11_ABI:
         torch._C._GLIBCXX_USE_CXX11_ABI = True
 
-    sources = ["csrc/flash_attn_ck/flash_api.cpp",
-               "csrc/flash_attn_ck/mha_bwd.cpp",
-               "csrc/flash_attn_ck/mha_fwd.cpp",
-               "csrc/flash_attn_ck/mha_varlen_bwd.cpp",
-               "csrc/flash_attn_ck/mha_varlen_fwd.cpp"] + glob.glob(
-        f"build/fmha_*wd*.cpp"
-    )
+    sources = [
+        "csrc/flash_attn_ck/flash_api.cpp",
+        "csrc/flash_attn_ck/mha_bwd.cpp",
+        "csrc/flash_attn_ck/mha_fwd.cpp",
+        "csrc/flash_attn_ck/mha_varlen_bwd.cpp",
+        "csrc/flash_attn_ck/mha_varlen_fwd.cpp",
+    ] + glob.glob(f"build/fmha_*wd*.cpp")
 
     rename_cpp_to_cu(sources)
 
-    renamed_sources = ["csrc/flash_attn_ck/flash_api.cu",
-                       "csrc/flash_attn_ck/mha_bwd.cu",
-                       "csrc/flash_attn_ck/mha_fwd.cu",
-                       "csrc/flash_attn_ck/mha_varlen_bwd.cu",
-                       "csrc/flash_attn_ck/mha_varlen_fwd.cu"] + glob.glob(f"build/fmha_*wd*.cu")
+    renamed_sources = [
+        "csrc/flash_attn_ck/flash_api.cu",
+        "csrc/flash_attn_ck/mha_bwd.cu",
+        "csrc/flash_attn_ck/mha_fwd.cu",
+        "csrc/flash_attn_ck/mha_varlen_bwd.cu",
+        "csrc/flash_attn_ck/mha_varlen_fwd.cu",
+    ] + glob.glob(f"build/fmha_*wd*.cu")
     extra_compile_args = {
         "cxx": ["-O3", "-std=c++17"] + generator_flag,
-        "nvcc":
-            [
-                "-O3","-std=c++17",
-                "-mllvm", "-enable-post-misched=0",
-                "-DCK_TILE_FMHA_FWD_FAST_EXP2=1",
-                "-fgpu-flush-denormals-to-zero",
-                "-DCK_ENABLE_BF16",
-                "-DCK_ENABLE_BF8",
-                "-DCK_ENABLE_FP16",
-                "-DCK_ENABLE_FP32",
-                "-DCK_ENABLE_FP64",
-                "-DCK_ENABLE_FP8",
-                "-DCK_ENABLE_INT8",
-                "-DCK_USE_XDL",
-                "-DUSE_PROF_API=1",
-                "-D__HIP_PLATFORM_HCC__=1",
-                # "-DFLASHATTENTION_DISABLE_BACKWARD",
-            ]
-            + generator_flag
-            + cc_flag
-        ,
+        "nvcc": [
+            "-O3",
+            "-std=c++17",
+            "-mllvm",
+            "-enable-post-misched=0",
+            "-DCK_TILE_FMHA_FWD_FAST_EXP2=1",
+            "-fgpu-flush-denormals-to-zero",
+            "-DCK_ENABLE_BF16",
+            "-DCK_ENABLE_BF8",
+            "-DCK_ENABLE_FP16",
+            "-DCK_ENABLE_FP32",
+            "-DCK_ENABLE_FP64",
+            "-DCK_ENABLE_FP8",
+            "-DCK_ENABLE_INT8",
+            "-DCK_USE_XDL",
+            "-DUSE_PROF_API=1",
+            "-D__HIP_PLATFORM_HCC__=1",
+            # "-DFLASHATTENTION_DISABLE_BACKWARD",
+        ]
+        + generator_flag
+        + cc_flag,
     }
 
     include_dirs = [
         Path(this_dir) / "csrc" / "composable_kernel" / "include",
         Path(this_dir) / "csrc" / "composable_kernel" / "library" / "include",
-        Path(this_dir) / "csrc" / "composable_kernel" / "example" / "ck_tile" / "01_fmha",
+        Path(this_dir)
+        / "csrc"
+        / "composable_kernel"
+        / "example"
+        / "ck_tile"
+        / "01_fmha",
     ]
 
     ext_modules.append(
@@ -390,7 +410,9 @@ elif not SKIP_CUDA_BUILD and IS_ROCM:
 
 def get_package_version():
     with open(Path(this_dir) / "flash_attn" / "__init__.py", "r") as f:
-        version_match = re.search(r"^__version__\s*=\s*(.*)$", f.read(), re.MULTILINE)
+        version_match = re.search(
+            r"^__version__\s*=\s*(.*)$", f.read(), re.MULTILINE
+        )
     public_version = ast.literal_eval(version_match.group(1))
     local_version = os.environ.get("FLASH_ATTN_LOCAL_VERSION")
     if local_version:
@@ -408,7 +430,9 @@ def get_wheel_url():
     cxx11_abi = str(torch._C._GLIBCXX_USE_CXX11_ABI).upper()
 
     if IS_ROCM:
-        torch_hip_version = parse(torch.version.hip.split()[-1].rstrip('-').replace('-', '+'))
+        torch_hip_version = parse(
+            torch.version.hip.split()[-1].rstrip("-").replace("-", "+")
+        )
         hip_version = f"{torch_hip_version.major}{torch_hip_version.minor}"
         wheel_filename = f"{PACKAGE_NAME}-{flash_version}+rocm{hip_version}torch{torch_version}cxx11abi{cxx11_abi}-{python_version}-{python_version}-{platform_name}.whl"
     else:
@@ -418,14 +442,18 @@ def get_wheel_url():
         torch_cuda_version = parse(torch.version.cuda)
         # For CUDA 11, we only compile for CUDA 11.8, and for CUDA 12 we only compile for CUDA 12.3
         # to save CI time. Minor versions should be compatible.
-        torch_cuda_version = parse("11.8") if torch_cuda_version.major == 11 else parse("12.3")
+        torch_cuda_version = (
+            parse("11.8") if torch_cuda_version.major == 11 else parse("12.3")
+        )
         # cuda_version = f"{cuda_version_raw.major}{cuda_version_raw.minor}"
         cuda_version = f"{torch_cuda_version.major}{torch_cuda_version.minor}"
 
         # Determine wheel URL based on CUDA version, torch version, python version and OS
         wheel_filename = f"{PACKAGE_NAME}-{flash_version}+cu{cuda_version}torch{torch_version}cxx11abi{cxx11_abi}-{python_version}-{python_version}-{platform_name}.whl"
 
-    wheel_url = BASE_WHEEL_URL.format(tag_name=f"v{flash_version}", wheel_name=wheel_filename)
+    wheel_url = BASE_WHEEL_URL.format(
+        tag_name=f"v{flash_version}", wheel_name=wheel_filename
+    )
 
     return wheel_url, wheel_filename
 
@@ -454,7 +482,9 @@ class CachedWheelsCommand(_bdist_wheel):
                 os.makedirs(self.dist_dir)
 
             impl_tag, abi_tag, plat_tag = self.get_tag()
-            archive_basename = f"{self.wheel_dist_name}-{impl_tag}-{abi_tag}-{plat_tag}"
+            archive_basename = (
+                f"{self.wheel_dist_name}-{impl_tag}-{abi_tag}-{plat_tag}"
+            )
 
             wheel_path = os.path.join(self.dist_dir, archive_basename + ".whl")
             print("Raw wheel path", wheel_path)
@@ -475,8 +505,12 @@ class NinjaBuildExtension(BuildExtension):
             max_num_jobs_cores = max(1, os.cpu_count() // 2)
 
             # calculate the maximum allowed NUM_JOBS based on free memory
-            free_memory_gb = psutil.virtual_memory().available / (1024 ** 3)  # free memory in GB
-            max_num_jobs_memory = int(free_memory_gb / 9)  # each JOB peak memory cost is ~8-9GB when threads = 4
+            free_memory_gb = psutil.virtual_memory().available / (
+                1024**3
+            )  # free memory in GB
+            max_num_jobs_memory = int(
+                free_memory_gb / 9
+            )  # each JOB peak memory cost is ~8-9GB when threads = 4
 
             # pick lower value of jobs based on cores vs memory metric to minimize oom and swap usage during compilation
             max_jobs = max(1, min(max_num_jobs_cores, max_num_jobs_memory))
@@ -512,11 +546,13 @@ setup(
         "Operating System :: Unix",
     ],
     ext_modules=ext_modules,
-    cmdclass={"bdist_wheel": CachedWheelsCommand, "build_ext": NinjaBuildExtension}
-    if ext_modules
-    else {
-        "bdist_wheel": CachedWheelsCommand,
-    },
+    cmdclass=(
+        {"bdist_wheel": CachedWheelsCommand, "build_ext": NinjaBuildExtension}
+        if ext_modules
+        else {
+            "bdist_wheel": CachedWheelsCommand,
+        }
+    ),
     python_requires=">=3.8",
     install_requires=[
         "torch",
