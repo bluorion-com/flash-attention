@@ -28,13 +28,11 @@ from torch.utils.cpp_extension import (
     IS_HIP_EXTENSION,
 )
 
-
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
-
-
 # ninja build does not work unless include_dirs are abs path
 this_dir = os.path.dirname(os.path.abspath(__file__))
+
+with open(os.path.join(this_dir, "README.md"), "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 BUILD_TARGET = os.environ.get("BUILD_TARGET", "auto")
 
