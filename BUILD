@@ -23,10 +23,10 @@ py_binary(
         "//visibility:public",
     ],
     deps = [
-        "@pypi//packaging:pkg",
-        "@pypi//setuptools:pkg",
-        "@pypi//torch:pkg",
-        "@pypi//wheel:pkg",
-	"@pypi//pip:pkg",
+        "@pip//packaging:pkg",
+        "@pip//setuptools:pkg",
+        "@pip//torch:pkg",
+        "@pip//wheel:pkg",
+	"@pip//pip:pkg",
     ],
 )
