@@ -1,3 +1,9 @@
+if ! command -v ninja &> /dev/null
+then
+    echo "ninja could not be found"
+    exit 1
+fi
+
 ./update_submodules.sh
 
 bazel run third_party/flash-attention:build_wheel
