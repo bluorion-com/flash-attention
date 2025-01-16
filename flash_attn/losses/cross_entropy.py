@@ -1,7 +1,7 @@
 # Copyright (c) 2024, Tri Dao.
 
-import torch
-import torch.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
 
 from flash_attn.ops.triton.cross_entropy import cross_entropy_loss
 

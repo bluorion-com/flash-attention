@@ -4,7 +4,7 @@ import os
 import re
 
 import pytest
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from einops import rearrange
 from flash_attn.models.gpt import GPTLMHeadModel, remap_state_dict_hf_gpt2
 from flash_attn.utils.distributed import all_gather_raw

@@ -1,4 +1,4 @@
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 
 from timm.data import Mixup
 from timm.data.mixup import mixup_target

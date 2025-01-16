@@ -1,7 +1,7 @@
 from typing import Any, List
 import inspect
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 import hydra
 from pytorch_lightning import LightningModule, LightningDataModule
 from torchmetrics import MetricCollection

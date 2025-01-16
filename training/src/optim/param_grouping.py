@@ -1,6 +1,6 @@
 import inspect
 
-import torch.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
 
 import hydra
 

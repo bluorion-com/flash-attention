@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from torch import Tensor
 
 from torchmetrics import Metric

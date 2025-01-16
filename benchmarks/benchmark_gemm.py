@@ -1,6 +1,6 @@
 import time
-import torch
-import torch.utils.benchmark as benchmark
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.utils.benchmark as benchmark
 
 from triton.testing import do_bench
 

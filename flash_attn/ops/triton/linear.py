@@ -2,7 +2,7 @@
 # and https://github.com/openai/triton/blob/master/python/triton/ops/matmul.py
 from typing import Optional
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 import triton
 import triton.language as tl
 from triton.ops.matmul_perf_model import early_config_prune, estimate_matmul_time

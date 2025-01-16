@@ -3,8 +3,8 @@ import math
 import itertools
 
 import pytest
-import torch
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 
 from einops import rearrange, repeat
 from flash_attn.layers.rotary import apply_rotary_emb

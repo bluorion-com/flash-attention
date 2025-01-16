@@ -1,4 +1,4 @@
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 
 from pytorch_lightning import Callback, Trainer, LightningModule
 

@@ -4,7 +4,7 @@
 import math
 import numpy as np
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 
 
 class LMDataset(torch.utils.data.Dataset):

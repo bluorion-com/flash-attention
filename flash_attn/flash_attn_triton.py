@@ -41,7 +41,7 @@ than CUDA forward + backward.
 
 import math
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 import triton
 import triton.language as tl
 

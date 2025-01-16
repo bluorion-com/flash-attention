@@ -2,8 +2,8 @@
 # We divide by world_size first before converting to fp16, so it's safer.
 from typing import Any, Callable
 
-import torch
-import torch.distributed as dist
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.distributed as dist
 
 
 def fp16_compress_hook(

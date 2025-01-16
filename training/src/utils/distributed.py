@@ -17,7 +17,7 @@
 import os
 from contextlib import contextmanager
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 
 
 def init_distributed(cuda):

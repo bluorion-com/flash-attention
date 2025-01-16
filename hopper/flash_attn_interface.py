@@ -2,8 +2,8 @@
 
 from typing import Optional, Union
 
-import torch
-import torch.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
 
 # isort: off
 # We need to import the CUDA kernels after importing torch

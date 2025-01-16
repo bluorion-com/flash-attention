@@ -10,7 +10,7 @@ from multiprocessing.shared_memory import SharedMemory
 
 import numpy as np
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from torch.utils.data.dataloader import DataLoader, Dataset
 from transformers import AutoTokenizer
 from datasets import load_dataset

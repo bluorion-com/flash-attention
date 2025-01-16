@@ -3,7 +3,7 @@ import pytorch_lightning as pl
 from pytorch_lightning import Callback
 from pytorch_lightning.utilities import rank_zero_only
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from torch.autograd import grad
 
 class CausalityMonitor(Callback):

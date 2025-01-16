@@ -1,6 +1,6 @@
 import math
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from einops import rearrange, repeat
 from flash_attn.bert_padding import pad_input, unpad_input
 

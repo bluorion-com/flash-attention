@@ -5,8 +5,8 @@
 
 from typing import Any, Dict, Optional
 
-import torch
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 from torch import Tensor
 from torchmetrics import Metric
 
@@ -26,7 +26,7 @@ class Perplexity(Metric):
         kwargs:
             Additional keyword arguments, see :ref:`Metric kwargs` for more info.
     Examples:
-        >>> import torch
+        >>> import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
         >>> preds = torch.rand(2, 8, 5, generator=torch.manual_seed(22))
         >>> target = torch.randint(5, (2, 8), generator=torch.manual_seed(22))
         >>> target[0, 6:] = -100

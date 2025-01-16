@@ -1,7 +1,7 @@
 import re
 
 import pytest
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from einops import rearrange
 from flash_attn.models.gpt import (
     GPTLMHeadModel,

@@ -5,7 +5,7 @@ current_dir = Path(__file__).parent.absolute()
 
 import pytest
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 
 import dotenv
 

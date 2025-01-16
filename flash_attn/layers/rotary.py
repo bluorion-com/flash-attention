@@ -3,7 +3,7 @@
 import math
 from typing import Optional, Tuple, Union
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from einops import rearrange, repeat
 from flash_attn.ops.triton.rotary import apply_rotary
 

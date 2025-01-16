@@ -2,7 +2,7 @@
 
 from typing import Optional, Union
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 
 import triton
 import triton.language as tl

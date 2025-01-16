@@ -3,8 +3,8 @@
 import math
 from functools import partial
 
-import torch
-import torch.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
 from einops import rearrange, repeat
 
 from flash_attn.utils.distributed import get_dim_for_local_rank

@@ -4,7 +4,7 @@ import warnings
 import os
 from packaging.version import parse, Version
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from torch.utils.cpp_extension import BuildExtension, CppExtension, CUDAExtension, CUDA_HOME
 from setuptools import setup, find_packages
 import subprocess

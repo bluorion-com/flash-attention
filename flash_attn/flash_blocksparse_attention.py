@@ -1,8 +1,8 @@
 import math
 
 import hydra
-import torch
-import torch.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
 from einops import rearrange
 
 from flash_attn.bert_padding import index_first_axis, pad_input, unpad_input

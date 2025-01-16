@@ -1,7 +1,7 @@
 # Copyright (c) 2022, Tri Dao.
 
-import torch
-import torch.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
 from einops import rearrange
 from torch import Tensor
 

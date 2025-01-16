@@ -2,8 +2,8 @@ import re
 from collections import OrderedDict
 
 import pytest
-import torch
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 from einops import rearrange
 from transformers import BertConfig
 from transformers.models.bert.modeling_bert import BertForPreTraining as BertForPreTrainingHF

@@ -10,8 +10,8 @@ from pytorch_lightning import Callback, Trainer
 from pytorch_lightning.utilities import rank_zero_only
 from pytorch_lightning.strategies import DeepSpeedStrategy
 
-import torch
-import torch.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
 
 try:
     from apex.contrib.layer_norm import FastLayerNorm

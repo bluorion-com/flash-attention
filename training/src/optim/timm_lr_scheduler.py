@@ -1,4 +1,4 @@
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from torch.optim import Optimizer
 
 from timm.scheduler import CosineLRScheduler

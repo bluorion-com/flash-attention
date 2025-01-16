@@ -2,7 +2,7 @@ import re
 import time
 
 import pytest
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from einops import rearrange
 from flash_attn.models.gpt import GPTLMHeadModel
 from flash_attn.models.opt import opt_config_to_gpt2_config, remap_state_dict_hf_opt

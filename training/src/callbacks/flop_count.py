@@ -1,7 +1,7 @@
 # Adapted from https://github.com/rwightman/pytorch-image-models/blob/master/benchmark.py
 from typing import Any, List, Sequence
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 
 from pytorch_lightning import Callback, Trainer, LightningModule
 from pytorch_lightning.utilities import rank_zero_only

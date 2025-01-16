@@ -4,7 +4,7 @@
 import math
 
 import pytest
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from apex.transformer import parallel_state, tensor_parallel
 from flash_attn.losses.cross_entropy import CrossEntropyLoss
 

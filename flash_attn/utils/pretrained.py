@@ -1,7 +1,7 @@
 import os
 from functools import partial
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from safetensors.torch import load_file as safe_load_file
 from transformers.utils import (
     SAFE_WEIGHTS_INDEX_NAME,

@@ -4,7 +4,7 @@ from typing import List
 
 import matplotlib.pyplot as plt
 import seaborn as sn
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 import wandb
 from pytorch_lightning import Callback, Trainer
 from pytorch_lightning.loggers import LoggerCollection, WandbLogger
