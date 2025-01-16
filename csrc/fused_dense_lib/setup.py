@@ -2,7 +2,7 @@ import os
 import subprocess
 from packaging.version import parse, Version
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from setuptools import setup
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension, CUDA_HOME
 

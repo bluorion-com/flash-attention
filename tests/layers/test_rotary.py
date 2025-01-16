@@ -3,8 +3,8 @@
 import math
 
 import pytest
-import torch
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 from einops import rearrange
 from flash_attn.layers.rotary import RotaryEmbedding, apply_rotary_emb_func, apply_rotary_emb_qkv_
 from transformers.models.gpt_neox.modeling_gpt_neox import RotaryEmbedding as RotaryEmbeddingNeoX

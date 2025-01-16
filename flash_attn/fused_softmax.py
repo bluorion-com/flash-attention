@@ -16,7 +16,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from apex._autocast_utils import _cast_if_autocast_enabled
 from apex.transformer.enums import AttnMaskType
 from fused_softmax_lib import (

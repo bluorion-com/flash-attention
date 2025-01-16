@@ -1,6 +1,6 @@
 from typing import Optional
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from torch import Tensor
 from torch.distributed import ProcessGroup
 

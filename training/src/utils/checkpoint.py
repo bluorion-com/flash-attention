@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 import math
 from einops import rearrange
 

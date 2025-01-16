@@ -1,8 +1,8 @@
 # Copyright (c) 2024, Tri Dao.
 
 import pytest
-import torch
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 from einops import rearrange, repeat
 
 from flash_attn.ops.triton.layer_norm import (

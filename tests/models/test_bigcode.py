@@ -1,7 +1,7 @@
 import time
 
 import pytest
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from transformers import AutoTokenizer, GPTBigCodeConfig
 from transformers.models.gpt_bigcode.modeling_gpt_bigcode import GPTBigCodeForCausalLM
 

@@ -14,7 +14,7 @@ current_dir = Path(__file__).parent.absolute()
 import shutil
 
 import pytest
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from einops import rearrange
 from flash_attn.models.gpt import GPTLMHeadModel, combine_state_dicts_tp, shard_state_dict_tp
 from flash_attn.models.llama import (

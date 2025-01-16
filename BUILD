@@ -24,9 +24,10 @@ py_binary(
     ],
     deps = [
         "@pip//packaging:pkg",
+        "@pip//pip:pkg",
         "@pip//setuptools:pkg",
         "@pip//torch:pkg",
         "@pip//wheel:pkg",
-	"@pip//pip:pkg",
+        "@pypi//pip:pkg",
     ],
 )

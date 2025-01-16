@@ -1,8 +1,8 @@
 # Copyright (c) 2023, Tri Dao.
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 from torch.distributed import ProcessGroup
 
 

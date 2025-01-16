@@ -1,9 +1,9 @@
 # Copied from https://github.com/mlcommons/training_results_v1.1/blob/main/NVIDIA/benchmarks/bert/implementations/pytorch/model/layers/activations.py
 import math
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 
 # 1/sqrt(2*pi)-> 0.3989423
 # 1/sqrt(2)   -> 0.70710678
@@ -110,7 +110,7 @@ template <typename T> T swiglu_fwd(T x, T y) {
 }
 """
 swiglu_bwd_codestring = """
-template <typename T> T swiglu_bwd(T x, T y, T g, T& dx, T& dy) {
+template <typename T> void swiglu_bwd(T x, T y, T g, T& dx, T& dy) {
     float x_sigmoid = 1.0f / (1.0f + ::exp(-float(x)));
     dx = x_sigmoid * (1 + float(x) * (1.0f - x_sigmoid)) * float(g) * float(y);
     dy = float(x) * x_sigmoid * float(g);

@@ -7,7 +7,7 @@ import weakref
 import copy
 import contextlib
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 
 
 def to_float_maybe(x):

@@ -1,7 +1,7 @@
 # Copyright (c) 2023, Tri Dao.
 import time
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 import pytest
 
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM

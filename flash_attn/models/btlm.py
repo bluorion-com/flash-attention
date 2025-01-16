@@ -7,8 +7,8 @@ from pathlib import Path
 
 from collections import OrderedDict
 
-import torch
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 
 from einops import rearrange
 from transformers import GPT2Config, AutoConfig, PretrainedConfig

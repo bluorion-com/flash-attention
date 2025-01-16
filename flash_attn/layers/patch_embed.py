@@ -3,7 +3,7 @@
 
 from functools import partial
 
-import torch.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
 from einops import rearrange
 from torch import _assert
 from torch.nn.modules.utils import _pair

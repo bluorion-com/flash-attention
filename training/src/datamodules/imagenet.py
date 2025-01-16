@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import Any, List, Union, Callable, Optional
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from torch.utils.data import Dataset, DataLoader, SequentialSampler
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.distributed import DistributedSampler

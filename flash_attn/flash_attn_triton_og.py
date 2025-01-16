@@ -10,7 +10,7 @@ This is a Triton implementation of the Flash Attention algorithm
 """
 
 import pytest
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 import triton
 import triton.language as tl
 

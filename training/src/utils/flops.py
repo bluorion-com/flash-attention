@@ -1,5 +1,5 @@
 # Adapted from https://github.com/rwightman/pytorch-image-models/blob/master/benchmark.py
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 
 try:
     from deepspeed.profiling.flops_profiler import get_model_profile

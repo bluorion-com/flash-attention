@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from pathlib import Path
 import types
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from torch.optim.optimizer import Optimizer
 from torch.optim import LBFGS
 

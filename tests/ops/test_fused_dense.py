@@ -2,8 +2,8 @@ import math
 from functools import partial
 
 import pytest
-import torch
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 from einops import rearrange
 from flash_attn.ops.fused_dense import FusedDense, FusedMLP
 

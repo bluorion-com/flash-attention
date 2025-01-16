@@ -15,7 +15,7 @@ OmegaConf.register_new_resolver('div_up', lambda x, y: (x + y - 1) // y)
 OmegaConf.register_new_resolver('datamodule', lambda attr: '${datamodule:' + str(attr) + '}')
 
 # Turn on TensorFloat32
-import torch.backends
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.backends
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 

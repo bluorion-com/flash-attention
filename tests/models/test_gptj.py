@@ -3,7 +3,7 @@
 import time
 
 import pytest
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from flash_attn.models.gpt import GPTLMHeadModel
 from flash_attn.models.gptj import gptj_config_to_gpt2_config, remap_state_dict_hf_gptj
 from flash_attn.utils.generation import update_graph_cache

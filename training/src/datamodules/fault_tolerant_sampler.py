@@ -2,7 +2,7 @@
 from typing import Iterator
 import math
 
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from torch.utils.data import RandomSampler, DistributedSampler
 
 

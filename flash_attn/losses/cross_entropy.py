@@ -1,7 +1,7 @@
-# Copyright (c) 2023, Tri Dao.
+# Copyright (c) 2024, Tri Dao.
 
-import torch
-import torch.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
 
 from flash_attn.ops.triton.cross_entropy import cross_entropy_loss
 
@@ -44,7 +44,7 @@ class CrossEntropyLoss(nn.Module):
         self.process_group = process_group
         self.return_z_loss = return_z_loss
 
-    def forward(self, input, target):
+    def forward(self, input, target, precomputed_lse=None):
         """
         Arguments:
             input: (batch, vocab_size)
@@ -57,6 +57,7 @@ class CrossEntropyLoss(nn.Module):
         loss, z_loss = cross_entropy_loss(
             input,
             target,
+            precomputed_lse=precomputed_lse,
             label_smoothing=self.label_smoothing,
             logit_scale=self.logit_scale,
             lse_square_scale=self.lse_square_scale,

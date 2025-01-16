@@ -8,8 +8,8 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Dict, List, Union
 
-import torch
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 from sentencepiece import SentencePieceProcessor
 from transformers import GPT2Config, LlamaConfig
 

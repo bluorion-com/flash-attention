@@ -1,9 +1,9 @@
 # The triton fused matmul + sqrelu is faster for fp16 but slower for bf16, compared
 # to naive implementation.
 import fused_dense_lib as fused_dense_cuda
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 from torch.cuda.amp import custom_bwd, custom_fwd
 
 from flash_attn.ops.activations import sqrelu_bwd, sqrelu_fwd

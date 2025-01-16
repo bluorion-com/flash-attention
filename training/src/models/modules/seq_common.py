@@ -2,9 +2,9 @@ import math
 from functools import partial
 from collections import namedtuple
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn as nn
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy.nn.functional as F
 from torch.nn.modules.utils import _pair
 
 import hydra

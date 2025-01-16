@@ -7,7 +7,7 @@ from pathlib import Path
 current_dir = Path(__file__).parent.absolute()
 
 import pytest
-import torch
+import torch  # gazelle:include_dep @pip//numpy  # gazelle:include_dep @pip//numpy
 from einops import rearrange
 from flash_attn.models.falcon import falcon_config_to_gpt2_config, remap_state_dict_hf_falcon
 from flash_attn.models.gpt import GPTLMHeadModel, combine_state_dicts_tp, shard_state_dict_tp
